@@ -4,6 +4,7 @@ import { ProductCatalogModule } from './product_catalog/product_catalog.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { dataBaseConfig } from './database/database.config';
 import { ConfigModule } from '@nestjs/config';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     SequelizeModule.forRoot(dataBaseConfig),
     ProductCatalogModule,
+    TransactionModule,
   ],
   providers: [AppService],
 })

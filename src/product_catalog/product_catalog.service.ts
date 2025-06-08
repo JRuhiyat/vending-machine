@@ -3,6 +3,7 @@ import { CreateProductCatalogDto } from './dto/create_product_catalog.dto';
 import { UpdateProductCatalogDto } from './dto/update_product_catalog.dto';
 import { ProductCatalog } from './entities/product_catalog.entity';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductCatalogService {
@@ -12,10 +13,30 @@ export class ProductCatalogService {
   ) {}
 
   async findAll() {
-    const productCatalog = await this.productCatalogRepository.findAll({
-      order: [['name', 'ASC']],
-    });
+    const productCatalog = await this.productCatalogRepository.findAll();
     return productCatalog;
+  }
+
+  async fetchDrinks(prices: any) {
+    try {
+      if (!prices.amount || prices.amount.length === 0) {
+        throw new Error('No prices provided');
+      }
+      const totalAmount = prices.amount.reduce((ac: number, v: number) => ac + v, 0);
+      const productCatalog = await this.productCatalogRepository.findAll({
+        where: {
+          price: {
+            [Op.lte]: totalAmount,
+          },
+        },
+        order: [['price', 'desc']],
+      });
+
+      return productCatalog;
+    } catch (error) {
+      console.error('Error fetching drinks:', error);
+      return [];
+    }
   }
 
   async findOne(id: string) {
