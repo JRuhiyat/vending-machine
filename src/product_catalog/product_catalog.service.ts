@@ -17,20 +17,24 @@ export class ProductCatalogService {
     return productCatalog;
   }
 
-  async fetchDrinks(prices: any) {
+  async fetchDrinks(prices: { amount: number[] }): Promise<ProductCatalog[]> {
     try {
-      if (!prices.amount || prices.amount.length === 0) {
+      if (!Array.isArray(prices.amount) || prices.amount.length === 0) {
         throw new Error('No prices provided');
       }
-      const totalAmount = prices.amount.reduce((ac: number, v: number) => ac + v, 0);
-      const productCatalog = await this.productCatalogRepository.findAll({
-        where: {
-          price: {
-            [Op.lte]: totalAmount,
+      const totalAmount = prices.amount.reduce(
+        (ac: number, v: number) => ac + v,
+        0,
+      );
+      const productCatalog: ProductCatalog[] =
+        await this.productCatalogRepository.findAll({
+          where: {
+            price: {
+              [Op.lte]: totalAmount,
+            },
           },
-        },
-        order: [['price', 'desc']],
-      });
+          order: [['price', 'desc']],
+        });
 
       return productCatalog;
     } catch (error) {

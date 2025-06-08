@@ -9,21 +9,6 @@ describe.only('TransactionService', () => {
   let service: TransactionService;
 
   beforeAll(async () => {
-    // const mockProductCatalogService = {
-    //   fetchDrinks: jest.fn(async (dto) => {
-    //     const allProducts = [
-    //       { dataValues: { name: 'Coffee', price: 12000 } },
-    //       { dataValues: { name: 'Milo', price: 9000 } },
-    //       { dataValues: { name: 'Cola', price: 7000 } },
-    //       { dataValues: { name: 'Sosro', price: 5000 } },
-    //       { dataValues: { name: 'Aqua', price: 2000 } },
-    //     ];
-    //     const totalAmount = dto.amount.reduce((sum, v) => sum + v, 0);
-    //     // Only return products with price <= totalAmount, sorted desc
-    //     return allProducts.filter(p => p.dataValues.price <= totalAmount);
-    //   }),
-    // };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TransactionService,
@@ -46,7 +31,7 @@ describe.only('TransactionService', () => {
 
     // Patch the ProductCatalogService.fetchDrinks to return an array for each test
     const mockProductCatalogService = {
-      fetchDrinks: jest.fn(async (dto) => {
+      fetchDrinks: jest.fn((dto: { amount: number[] }) => {
         const allProducts = [
           { dataValues: { name: 'Coffee', price: 12000 } },
           { dataValues: { name: 'Milo', price: 9000 } },
@@ -54,17 +39,19 @@ describe.only('TransactionService', () => {
           { dataValues: { name: 'Sosro', price: 5000 } },
           { dataValues: { name: 'Aqua', price: 2000 } },
         ];
-        const totalAmount = dto.amount.reduce((sum, v) => sum + v, 0);
+        const totalAmount = Array.isArray(dto.amount)
+          ? dto.amount.reduce((sum: number, v: number) => sum + v, 0)
+          : 0;
         // Only return products with price <= totalAmount, sorted desc
-        return allProducts.filter(p => p.dataValues.price <= totalAmount);
+        return allProducts.filter((p) => p.dataValues.price <= totalAmount);
       }),
     };
 
     // Replace the ProductCatalogService in the service instance
-    // @ts-ignore
+    // @ts-expect-error: Overriding private readonly property for testing purposes
     service.productCatalogService = mockProductCatalogService;
 
-    const testCases = [
+    const testCases: { input: number[]; expected: string }[] = [
       { input: [2000], expected: '1 Aqua' },
       { input: [2000, 2000], expected: '2 Aqua' },
       { input: [5000, 2000], expected: '1 Cola' },
@@ -75,7 +62,7 @@ describe.only('TransactionService', () => {
 
     for (const testCase of testCases) {
       // Simulate validation for invalid denomination
-      if (testCase.input.some(v => v !== 2000 && v !== 5000)) {
+      if (testCase.input.some((v) => v !== 2000 && v !== 5000)) {
         expect('invalid denomination').toEqual(testCase.expected);
         continue;
       }

@@ -6,10 +6,7 @@ import { Transaction } from './entities/transaction.entity';
 import { ProductCatalogModule } from '../product_catalog/product_catalog.module';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Transaction]),
-    ProductCatalogModule,
-  ],
+  imports: [SequelizeModule.forFeature([Transaction]), ProductCatalogModule],
   controllers: [TransactionController],
   providers: [TransactionService],
   exports: [TransactionService],

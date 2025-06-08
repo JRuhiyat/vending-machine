@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsArray, ArrayNotEmpty, ArrayMinSize, IsNumber, IsIn } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsArray,
+  ArrayNotEmpty,
+  IsNumber,
+  IsIn,
+} from 'class-validator';
 
 export class CreateTransactionDto {
   @IsNotEmpty()

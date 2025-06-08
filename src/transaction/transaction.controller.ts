@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTransactionDto } from './dto/transaction.dto';

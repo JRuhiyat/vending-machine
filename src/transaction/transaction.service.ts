@@ -13,11 +13,15 @@ export class TransactionService {
   ) {}
 
   async getDrinks(createTransactionDto: CreateTransactionDto) {
-    const totalAmount = createTransactionDto.amount.reduce((sum, v) => sum + v, 0);
-    const productCatalog = await this.productCatalogService.fetchDrinks(createTransactionDto);
+    const totalAmount = createTransactionDto.amount.reduce(
+      (sum, v) => sum + v,
+      0,
+    );
+    const productCatalog =
+      await this.productCatalogService.fetchDrinks(createTransactionDto);
 
     let remaining = totalAmount;
-    let result: { name: string, count: number }[] = [];
+    const result: { name: string; count: number }[] = [];
 
     for (const product of productCatalog) {
       const price = product.dataValues.price;
@@ -29,6 +33,6 @@ export class TransactionService {
     }
 
     if (result.length === 0) return '';
-    return result.map(r => `${r.count} ${r.name}`).join(', ');
+    return result.map((r) => `${r.count} ${r.name}`).join(', ');
   }
 }
